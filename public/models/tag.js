@@ -10,3 +10,7 @@ Tag = Backbone.Model.extend({
 		this.set({"end": time});
 	}
 });
+
+var TagList = Backbone.Collection.extend({
+	model: Tag
+});

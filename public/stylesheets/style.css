@@ -1,7 +1,6 @@
 #tagMarker{
 	position:absolute;
 	background:red;
-	width:3px;
 	z-index:30000;
 	opacity: 0.5;
 	-moz-opacity: 0.5;

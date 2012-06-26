@@ -5,12 +5,13 @@ block content
 		p Welcome to #{title}.
 
 	<div class="leanback-player-video">
-	<video width="360" height="240" controls>
+	<video width="360" height="240" controls onloadedmetadata="injectTag()">
 	<source src="/media/video/bunny.ogg" type='video/ogg'/>
 	</video>
 	</div>
 
 	<button id="startTagButton" type="button">Start tag</button>
 	<button id="endTagButton" type="button">End tag</button>
-
-	</div>
+	<button id="clearTagButton" type="button">Clear Selection</button>
+	<button id="saveTagButton" type="button">Save Tag</button>
+	ul#tagList
