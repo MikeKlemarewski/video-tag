@@ -1,7 +1,16 @@
-div#info
-	p Welcome to #{title}.
+extends layout
 
-div.leanback
-<video width="360" height="240" controls="controls">
-<source src="/media/video/plane.mpeg4" type='video/mp4 codecs="avc1.42E01E, mp4a.40.2"'/>
-</video>
+block content
+	div#info
+		p Welcome to #{title}.
+
+	<div class="leanback-player-video">
+	<video width="360" height="240" controls>
+	<source src="/media/video/bunny.ogg" type='video/ogg'/>
+	</video>
+	</div>
+
+	<button id="startTagButton" type="button">Start tag</button>
+	<button id="endTagButton" type="button">End tag</button>
+
+	</div>
