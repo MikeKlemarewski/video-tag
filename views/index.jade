@@ -6,24 +6,10 @@ block content
 
 	div#player
 		<div class="leanback-player-video">
-		<video id="media_player" width="360" height="240" controls onloadedmetadata="injectTag()">
+		<video width="360" height="240" controls onloadedmetadata="injectTag()">
 		<source src="/media/video/bunny.ogg" type='video/ogg'/>
 		</video>
 		</div>
-
-	div#buttons
-		<button id="startTagButton" type="button" onclick="startTag('video')">Start tag</button>
-		<button id="endTagButton" type="button" onclick="endTag('video')">End tag</button>
-		<button id="clearTagButton" type="button">Clear Selection</button>
-		<button id="saveTagButton" type="button">Save Tag</button>
-
-	ul#tagList
-
-	div#buttons
-		<button id="startAudioButton" type="button" onclick="startTag('audio')">Start tag</button>
-		<button id="endAudioButton" type="button" onclick="endTag('audio')">End tag</button>
-		<button id="clearTagButton" type="button">Clear Selection</button>
-		<button id="saveTagButton" type="button">Save Tag</button>
 
 	div#player
 		<div class="leanback-player-video">
@@ -31,3 +17,12 @@ block content
 		<source src="/media/audio/walter.mp3" type='audio/mpeg'/>
 		</video>
 		</div>
+
+	div#buttons
+		<button id="startTagButton" type="button" onclick="startTag('click')">Start tag</button>
+		<button id="endTagButton" type="button" onclick="endTag('click')">End tag</button>
+		<button id="clearTagButton" type="button">Clear Selection</button>
+		<button id="saveTagButton" type="button">Save Tag</button>
+		<button id="dragButton" type="button">Enable Drag Selection</button>
+
+	ul#tagList

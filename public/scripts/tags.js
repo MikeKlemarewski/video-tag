@@ -5,62 +5,82 @@
 var bar = "<div id='hackDiv'><div id='tagMarker' style='background:red; height=20px; width=20px'></div></div>";
 var tag;
 var tagList;
+var draggable = false;
 
 var getTagPosition = function(){
 	var pos = $("#leanback-video-id0_progress_bar_played").offset();
 	alert(pos.top + " " + pos.width);
 }
 
+var toggleDrag = function(){
+	var button = $("#dragButton");
+	if(draggable){
+		draggable = false;
+		button.html('Enable Drag Selection');
+	}
+	else{
+		draggable = true;
+		button.html('Disable Drag Selection');
+	}
+}
+
+var timeToSeconds = function(time){
+	var times             = time.split(":");	
+	var secondMultipliers = [1,60,3600];
+	var seconds = 0;
+
+	var i;
+	for(i = 1; i <= times.length ; ++i){
+		seconds = seconds + parseInt(times[times.length - i], 10) * secondMultipliers[i-1];
+	}
+	return seconds;
+}
+
 //Calculate width percentage based on time selected vs total video time
 var getSelectionWidth = function(start, end, total){
 	
-	var startTimes        = start.split(":");	
-	var endTimes          = end.split(":");
-	var totalTimes        = total.split(":");
-	var startSeconds      = 0;
-	var endSeconds        = 0;
-	var totalSeconds      = 0;
-	var secondMultipliers = [1,60,3600];
-
-	var i;
-	for(i = 1; i <= startTimes.length ; ++i){
-		startSeconds = startSeconds + parseInt(startTimes[startTimes.length - i], 10) * secondMultipliers[i-1];
-	}
-
-	for(i = 1; i <= endTimes.length ; ++i){
-		endSeconds = endSeconds + parseInt(endTimes[endTimes.length - i], 10) * secondMultipliers[i-1];
-	}
-
-	for(i = 1; i <= totalTimes.length ; ++i){
-		totalSeconds = totalSeconds + parseInt(totalTimes[totalTimes.length - i], 10) * secondMultipliers[i-1];
-	}
+	var startSeconds      = timeToSeconds(start);
+	var endSeconds        = timeToSeconds(end);
+	var totalSeconds      = timeToSeconds(total);
 
 	return Math.floor(((endSeconds - startSeconds) / totalSeconds) * 100);
 }
 
-var startTag = function(){
+var startTag = function(action){
 	var timeMatch = /(\d+:\d+)/g;
+	var totalTimeMatch = /(\d+:\d+) \/ (\d+:\d+)/g;
+	
+	var time;
+	if(action==='drag'){
+		time = timeMatch.exec($("#leanback-video-id0_progress_bar_time_txt").html())[1];
+	}
+	else{
+		time = timeMatch.exec($("#leanback-video-id0_timer_control_inner").html())[1];
+	}
+	var start = timeToSeconds(time);
+	var total = totalTimeMatch.exec($("#leanback-video-id0_timer_control_inner").html())[2];
+	total = timeToSeconds(total);
+	var percent = start / total;
+
+	var width  = $("#leanback-video-id0_progress_bar_bg").css('width').replace('px','');
+	var margin = $("#leanback-video-id0_progress_bar_played").css('margin-left').replace('px','');
 	var end   = tag.get("end");		
-	var start = timeMatch.exec($("#leanback-video-id0_timer_control_inner").html())[1];
+
+	width  = parseInt(width, 10);
+	margin = parseInt(margin, 10);
+	margin = margin + (width * percent);
+	$("#tagMarker").css('margin-left', margin);
 
 	$("#tagMarker").css('height', $("#leanback-video-id0_progress_bar_played").css('height'));
 	$("#tagMarker").css('width', 3);
 
-	var width  = $("#leanback-video-id0_progress_bar_played").css('width').replace('px','');
-	var margin = $("#leanback-video-id0_progress_bar_played").css('margin-left').replace('px','');
-	
-	width  = parseInt(width, 10);
-	margin = parseInt(margin, 10);
-	width  = width + margin;
-	$("#tagMarker").css('margin-left', width);
-
 	if(end === null){
-		tag.setStart(start);
+		tag.setStart(time);
 		console.log("Start: " + tag.get("start") + " End is null: " + tag.get("end"));	
 	}
 	else{
 		if(start <= end){
-			tag.setStart(start);	
+			tag.setStart(time);	
 		}
 		else{
 			alert("start can't be past the end");
@@ -68,12 +88,18 @@ var startTag = function(){
 	}
 }
 
-var endTag = function(){
+var endTag = function(action){
 	var timeMatch = /(\d+:\d+)/g;
-	var start = tag.get("start");		
-	var timer = ($("#leanback-video-id0_timer_control_inner").html()).match(timeMatch);
-	var end   = timer[0];
-	var total = timer[1];
+	var totalTimeMatch = /(\d+:\d+) \/ (\d+:\d+)/g;
+	var start = tag.get("start");
+	var end;
+	if(action==='drag'){
+		end = timeMatch.exec($("#leanback-video-id0_progress_bar_time_txt").html())[1];
+	}
+	else{
+		end = timeMatch.exec($("#leanback-video-id0_timer_control_inner").html())[1];
+	}	
+	var total = totalTimeMatch.exec($("#leanback-video-id0_timer_control_inner").html())[2];
 	var width = getSelectionWidth(start, end, total);
 	$("#tagMarker").css('width', width + "%");
 	tag.setEnd(end);
@@ -114,7 +140,29 @@ $(document).ready(function(){
 
 	$("#clearTagButton").click(clearTag);
 	$("#saveTagButton").click(saveTag);
+	$("#dragButton").click(toggleDrag);
 	tag = new Tag;
 	tagList = new TagList;
 
 });
+
+$(document).mousedown(function(e){
+	switch(e.target['id']){
+		case 'leanback-video-id0_progress_bar_time_line':
+			if(draggable){
+				startTag('drag');
+			}
+			break;
+	}
+});
+
+$(document).mouseup(function(e){
+	switch(e.target['id']){
+		case 'leanback-video-id0_progress_bar_time_line':
+			if(draggable){
+				endTag('drag');
+			}
+			break;
+	}
+});
+
