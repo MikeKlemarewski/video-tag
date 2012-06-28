@@ -1,4 +1,7 @@
-var timeMatch = /(\d+:\d+) \/ (\d+:\d+)/;
+/*
+	I wrapped the marker div inside the 'hackDiv' in order to have
+	the highlighted selection appear overtop of the progress bar
+*/
 var bar = "<div id='hackDiv'><div id='tagMarker' style='background:red; height=20px; width=20px'></div></div>";
 var tag;
 var tagList;
@@ -36,7 +39,7 @@ var getSelectionWidth = function(start, end, total){
 }
 
 var startTag = function(){
-
+	var timeMatch = /(\d+:\d+)/g;
 	var end   = tag.get("end");		
 	var start = timeMatch.exec($("#leanback-video-id0_timer_control_inner").html())[1];
 
@@ -66,10 +69,11 @@ var startTag = function(){
 }
 
 var endTag = function(){
+	var timeMatch = /(\d+:\d+)/g;
 	var start = tag.get("start");		
-	var timer = timeMatch.exec($("#leanback-video-id0_timer_control_inner").html());
-	var end   = timer[1];
-	var total = timer[2];
+	var timer = ($("#leanback-video-id0_timer_control_inner").html()).match(timeMatch);
+	var end   = timer[0];
+	var total = timer[1];
 	var width = getSelectionWidth(start, end, total);
 	$("#tagMarker").css('width', width + "%");
 	tag.setEnd(end);
@@ -85,6 +89,7 @@ var clearTag = function(){
 
 //Inserts divs that hold and display tag marker
 var injectTag = function(){
+
 	$(bar).insertAfter($("#leanback-video-id0_progress_bar_bg"));
 	$("#hackDiv").css('width', $("#leanback-video-id0_progress_control").css('width'));
 	$("#hackDiv").css('height', $("#leanback-video-id0_progress_control").css('height'));
@@ -107,8 +112,6 @@ var saveTag = function(){
 
 $(document).ready(function(){
 
-	$("#startTagButton").click(startTag);
-	$("#endTagButton").click(endTag);
 	$("#clearTagButton").click(clearTag);
 	$("#saveTagButton").click(saveTag);
 	tag = new Tag;

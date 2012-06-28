@@ -10,3 +10,11 @@
 #hackDiv{
 	position:absolute;
 }
+
+#player{
+	position:relative;
+}
+
+#buttons{
+	position:relative;
+}
